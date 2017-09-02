@@ -1,0 +1,31 @@
+html {
+  font-family: Sans-serif;
+}
+
+table {
+    width:100%;
+}
+table, th, td {
+    border: 2px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+    text-align: center;
+}
+
+.tabla_db tr {
+    background-color: #e8eaf6;
+    color: #000000;
+}
+
+.tabla_db th {
+    background-color: #1A237E;
+    color: #FFFFFF;
+}
+
+#map {
+  margin-top: 20px;
+  height: 400px;
+  width: 100%;
+}
