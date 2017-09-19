@@ -1,5 +1,6 @@
 import socket
 import time
+import pymysql as mariadb
 
 # Syrus Information / raw_data: >XXXAABBBBCDDDDDEEEFFFFFGGGGHHHHHIIIJJJKL;ID=357330051004711<
 # Syrus Information / raw data: 01234567890123456789012345678901234567890;ID=357330051004711<
@@ -28,31 +29,108 @@ import time
 # Formato de encabezados para tener seguimiento de los datos (Reportes)
 
 
+# Para filtrar las alertas de eventos (que ya se saben), descomentar las dos lineas siguientes
+from warnings import filterwarnings
+filterwarnings('ignore', category = mariadb.Warning)
+
+# Nombre de la base de datos
+DB_NAME = 'sypydb'
+
+# Tablas dento de la base de datos, hasta ahora solo requerimos una sola
+TABLES = {}
+
+TABLES['localiz'] = (
+    "CREATE TABLE IF NOT EXISTS `localiz` ("
+    "  `id` int(255) NOT NULL AUTO_INCREMENT,"
+    "  `latitud` varchar(15) NOT NULL,"
+    "  `longitud` varchar(15) NOT NULL,"
+    "  `tiempo` varchar(22) NOT NULL,"
+    "  PRIMARY KEY (`id`), UNIQUE KEY `tiempo` (`tiempo`)"
+    ") ENGINE=InnoDB")
+
+# Conexión con el servidor utilizando XAMPP
+cnx = mariadb.connect(host='sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com', port=10250, user='sypy_design', password='sypy_1234')
+cursor = cnx.cursor()
+
+# Creación base de datos
+def create_database(curs):
+    try:
+        # Elimina la base de datos si ya existe
+        # curs.execute("DROP DATABASE IF EXISTS {}".format(DB_NAME))
+        # Crea la base de datos si no existe
+        curs.execute(
+            "CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
+    except mariadb.Error as err:
+        print("Failed creating database: {}".format(err))
+        exit(1)
+    else:
+        print("Database OK")
+
+# try:
+#     create_database(cursor)
+# except mariadb.Error as err:
+#     print("Error: {}".format(err))
+
+cursor.execute("USE {}".format(DB_NAME))
+for name, ddl in TABLES.items():
+    try:
+        print("Creating table {}: ".format(name), end='')
+        cursor.execute(ddl)
+    except mariadb.Error as err:
+        print("Failed creating table: {}".format(err))
+        exit(1)
+    else:
+        print("Table OK")
+
+cnx.commit()
+cnx.close()
+
+
 def main():
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     HOST = socket.gethostbyname(socket.gethostname())
-    PORT = 10256
+    PORT = 10257
     # Bind the socket to the port
     server_address = (HOST, PORT)
     print('Inicializando en Host IPV4 %s Puerto %s' % server_address)
     sock.bind(server_address)
 
     while True:
-        print("Connected")
         try:
             while True:
+                print("Connected")
                 raw_data, addr = sock.recvfrom(65535)
-                save_data = str(raw_data)[1:]
+                save_data = str(raw_data)[2:]
                 # Formato para discriminar Latitud y Longitud
                 if raw_data:
-                    print('recibido ' + save_data)
-                    op, evento, fecha, lat, lon = obtMsg(raw_data);
+                    # print('recibido ' + save_data)
+                    op, evento, fecha, lat, lon = obtMsg(save_data);
+                    # print(op, evento)
                     if op:
-                        print('Evento: ' + str(evento) + ', ' + 'la latitud es: ' + str(lat) + ' y la longitud es: ' + lon)
+                        print('Evento: ' + str(evento) + ', ' + 'la latitud es: ' + str(lat) + ' y la longitud es: ' + str(lon))
                         print('Fecha del dato: ' + fecha)
+                        # Se invoca la base de datos
+                        cnx = mariadb.connect(host='sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com', port=10250, user='sypy_design', password='sypy_1234')
+                        cursor = cnx.cursor()
+                        cursor.execute("USE {}".format(DB_NAME))
+                        # Inserta los valores
+                        add_localiz = ("INSERT INTO localiz "
+                                        "(latitud, longitud, tiempo) "
+                                        "VALUES (%s, %s, %s)")
+                        data_localiz = (str(lat), str(lon), fecha)
+
+                        # Insert new localization
+                        cursor.execute(add_localiz, data_localiz)
+
+                        cnx.commit()
+
+                        cursor.close()
+                        cnx.close()
                     else:
+                        print("***********************************************")
                         print(" Mensaje Ignorado ")
+                        print("***********************************************")
                 else:
                     break
         finally:
@@ -84,11 +162,12 @@ def obtMsg(d):
     return op, evento, fecha, lat, lon
 
 def obtFecha(sem,dia,hora):
-    seg = sem * 7 * 24 * 60 * 60 + (dia + 3657) * 24 * 60 * 60 + hora + 5 * 60 * 60
+    seg = int(sem) * 7 * 24 * 60 * 60 + (int(dia) + 3657) * 24 * 60 * 60 + int(hora) + 5 * 60 * 60
     # Transforma el numero (en segundos) a un formato de fecha especificado por los %b %d %Y %M %S
     # (Vease https://docs.python.org/2/library/time.html)
-    t = time.mktime(seg)
-    fecha = time.strftime("%b %d %Y %H:%M:%S", time.localtime(t))
+    # t = time.mktime(seg)
+    fecha = time.strftime("%b %d %Y %H:%M:%S", time.localtime(seg))
     return fecha
+
 
 main()
