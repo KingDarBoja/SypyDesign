@@ -162,7 +162,7 @@ def obtMsg(d):
     return op, evento, fecha, lat, lon
 
 def obtFecha(sem,dia,hora):
-    seg = int(sem) * 7 * 24 * 60 * 60 + (int(dia) + 3657) * 24 * 60 * 60 + int(hora) + 5 * 60 * 60
+    seg = int(sem) * 7 * 24 * 60 * 60 + (int(dia) + 3657) * 24 * 60 * 60 + int(hora) - 5 * 60 * 60
     # Transforma el numero (en segundos) a un formato de fecha especificado por los %b %d %Y %M %S
     # (Vease https://docs.python.org/2/library/time.html)
     # t = time.mktime(seg)
