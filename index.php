@@ -77,8 +77,8 @@
         </table>
       </div>
     </div>
-    <div class="row expanded align-center">
-      <div class="small-12 columns">
+    <div class="row small-collapse medium-collapse expanded">
+      <div class="small-12 column">
         <div id="map"></div>
             <script>
               var map;

@@ -52,8 +52,9 @@
   <div class="row">
     <div class="small-12 columns">
       <a class="button" href="#" id="btn-historical">Obtener Historicos</a>
-      <div id="map2"></div>
-      <table id="table_hist">
+
+      <!-- Uncomment if you want to see all the data obtained from query  -->
+      <!-- <table id="table_hist">
         <thead>
           <tr>
             <th class="text-center">ID</th>
@@ -66,7 +67,13 @@
           <tr>
           </tr>
         </tbody>
-      </table>
+      </table> -->
+    </div>
+  </div>
+  <div class= "row small-collapse medium-collapse expanded">
+    <div class="small-12 columns">
+      <div id="error_msg_hist"></div>
+      <div id="map2"></div>
     </div>
   </div>
   <script>
