@@ -90,7 +90,7 @@ def main():
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     HOST = socket.gethostbyname(socket.gethostname())
-    PORT = 10257
+    PORT = 10258
     # Bind the socket to the port
     server_address = (HOST, PORT)
     print('Inicializando en Host IPV4 %s Puerto %s' % server_address)

@@ -13,7 +13,7 @@ $(document).ready(function() {
       lng: INIT_LON
     };
     var myOptions2 = {
-      zoom: 12,
+      zoom: 15,
       center: latlng2,
       panControl: true,
       zoomControl: true,
@@ -59,13 +59,18 @@ $(document).ready(function() {
     return marker;
   }
 
+  // Uncomment if you want to enable table animations (historical query)
   $("#table_hist").hide();
+
   $("#btn-historical").click(function() {
     var initial_d = $('#startDate').html();
     var ending_d = $('#endDate').html();
-    $('#table_histb tr').fadeOut(200, function() {
-      $(this).remove();
-    });
+
+    // Uncomment if you want to enable table animations (historical query)
+    // $('#table_histb tr').fadeOut(200, function() {
+    //   $(this).remove();
+    // });
+
     $.ajax({
       type: 'POST',
       url: 'historical_query.php',
@@ -74,40 +79,56 @@ $(document).ready(function() {
         endd: ending_d
       },
       success: function(hs_data) {
-        $('#table_hist').fadeIn(200);
+        // Uncomment if you want to enable table animations (historical query)
+        // $('#table_hist').fadeIn(200);
+
         if (typeof myPathTotal2 !== 'undefined') {
           myPathTotal2.setMap(null);
           myPath2 = [];
         }
 
-
         var json_hist = jQuery.parseJSON(JSON.stringify(hs_data));
-        INIT_LAT = parseFloat(json_hist[json_hist.length - 1].latitud);
-        INIT_LON = parseFloat(json_hist[json_hist.length - 1].longitud);
-        initMap2();
-        $(json_hist).each(function() {
-          var ID = this.id;
-          var LATITUDE = this.latitud;
-          var LONGITUDE = this.longitud;
-          var TIME = this.tiempo;
-          myCoord2 = new google.maps.LatLng(parseFloat(LATITUDE), parseFloat(LONGITUDE));
-          myPath2.push(myCoord2);
-          myPathTotal2 = new google.maps.Polyline({
-            path: myPath2,
-            strokeColor: '#FF0000',
-            strokeOpacity: 1.0,
-            strokeWeight: 5
-          });
-          myPathTotal2.setPath(myPath2)
-          myPathTotal2.setMap(map2);
-          addMarker(new google.maps.LatLng(LATITUDE, LONGITUDE), TIME, ID, map2);
+        if (json_hist[json_hist.length - 1] == undefined) {
+          INIT_LAT = 0;
+          INIT_LON = 0;
+          initMap2();
+          $("#map2").show();
+          $('#error_msg_hist').html("<h4>Error: No se obtuvieron resultados en su búsqueda.</h4>").show();
+        } else {
+          INIT_LAT = parseFloat(json_hist[json_hist.length - 1].latitud);
+          INIT_LON = parseFloat(json_hist[json_hist.length - 1].longitud);
+          initMap2();
+          $('#error_msg_hist').hide();
+          // For each element from the query, we asign a marker
+          $(json_hist).each(function() {
+            var ID = this.id;
+            var LATITUDE = this.latitud;
+            var LONGITUDE = this.longitud;
+            var TIME = this.tiempo;
+            myCoord2 = new google.maps.LatLng(parseFloat(LATITUDE), parseFloat(LONGITUDE));
+            myPath2.push(myCoord2);
+            myPathTotal2 = new google.maps.Polyline({
+              path: myPath2,
+              strokeColor: '#FF0000',
+              strokeOpacity: 1.0,
+              strokeWeight: 5
+            });
+            myPathTotal2.setPath(myPath2)
+            myPathTotal2.setMap(map2);
+            addMarker(new google.maps.LatLng(LATITUDE, LONGITUDE), TIME, ID, map2);
 
-          var item = $("<tr><td>" + ID + "</td><td>" + LATITUDE + "</td><td>" + LONGITUDE + "</td><td>" + TIME + "</td><tr>").hide();
-          $('#table_histb').append(item);
-          // $('#table_hist').append("<tr><td>" + ID + "</td><td>" + LATITUDE + "</td><td>" + LONGITUDE + "</td><td>" + TIME + "</td><tr>").hide();
-        });
-        $('#table_histb > tr').delay(1000).fadeIn(200);
-        $("#map2").show();
+            var item = $("<tr><td>" + ID + "</td><td>" + LATITUDE + "</td><td>" + LONGITUDE + "</td><td>" + TIME + "</td><tr>").hide();
+
+            // Uncomment to enable table append items from historical query
+            $('#table_histb').append(item);
+            // $('#table_hist').append("<tr><td>" + ID + "</td><td>" + LATITUDE + "</td><td>" + LONGITUDE + "</td><td>" + TIME + "</td><tr>").hide();
+          });
+
+          // Uncomment if you want to enable table animations (historical query)
+          // $('#table_histb > tr').delay(1000).fadeIn(200);
+
+          $("#map2").show();
+        }
       },
       dataType: 'json'
     });
