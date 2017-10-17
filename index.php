@@ -80,9 +80,20 @@
     <div class="row small-collapse medium-collapse expanded">
       <div class="small-12 column">
         <div id="map"></div>
-            <script>
+        <script>
               var map;
               var myPath = [];
+              var myPath_1 = [];
+
+              var iconBase = 'img/';
+              var icons = {
+                truck: {
+                  icon: iconBase + 'Trailer_Icon.png'
+                },
+                motorcycle: {
+                  icon: iconBase + 'Motorcycle_Icon.png'
+                }
+              };
 
               function moveToLocation(lat, lng){
                   var center = new google.maps.LatLng(lat, lng);
@@ -103,6 +114,7 @@
                map = new google.maps.Map(document.getElementById("map"), myOptions);
                // addMarker(new google.maps.LatLng(<?php echo $row['latitud'] ?>, <?php echo $row['longitud'] ?>), map);
                var ID_ST = 0;
+               var ID_ST_1 = 0;
                setInterval(function mapload(){
                      $.ajax({
                            url: "location.php",
@@ -110,9 +122,10 @@
                            success: function(data)
                            {
                              //var json_obj = $.parseJSON(data);//parse JSON
-                             var json_obj = jQuery.parseJSON(JSON.stringify(data));
+                             var json_obj = jQuery.parseJSON(JSON.stringify(data['vehicle_1']));
+                             var json_obj1 = jQuery.parseJSON(JSON.stringify(data['vehicle_2']));
                              // Data Treatment in order to obtain the new latlng coordinates.
-                             $(jQuery.parseJSON(JSON.stringify(data))).each(function() {
+                             $(json_obj).each(function() {
                                var ID = this.id;
                                var LATITUDE = this.latitud;
                                var LONGITUDE = this.longitud;
@@ -121,29 +134,49 @@
                                  myPath.push(myCoord);
                                  var myPathTotal = new google.maps.Polyline({
                                     path: myPath,
-                                    strokeColor: '#FF0000',
+                                    strokeColor: '#551A8B',
                                     strokeOpacity: 1.0,
                                     strokeWeight: 5
                                  });
                                  myPathTotal.setPath(myPath)
                                  myPathTotal.setMap(map);
-                                 addMarker(new google.maps.LatLng(LATITUDE, LONGITUDE), map);
+                                 addMarker(new google.maps.LatLng(LATITUDE, LONGITUDE), map, icons['truck'].icon);
                                  moveToLocation(parseFloat(LATITUDE),parseFloat(LONGITUDE));
                                  ID_ST = this.id;
                                }
                             });
+                            $(json_obj1).each(function() {
+                              var ID_1 = this.id;
+                              var LATITUDE_1 = this.latitud;
+                              var LONGITUDE_1 = this.longitud;
+                              if (ID_ST_1 != this.id) {
+                                myCoord_1 = new google.maps.LatLng(parseFloat(LATITUDE_1),parseFloat(LONGITUDE_1));
+                                myPath_1.push(myCoord_1);
+                                var myPathTotal_1 = new google.maps.Polyline({
+                                   path: myPath_1,
+                                   strokeColor: '#8B0000',
+                                   strokeOpacity: 1.0,
+                                   strokeWeight: 5
+                                });
+                                myPathTotal_1.setPath(myPath_1)
+                                myPathTotal_1.setMap(map);
+                                addMarker(new google.maps.LatLng(LATITUDE_1, LONGITUDE_1), map, icons['motorcycle'].icon);
+                                // moveToLocation(parseFloat(LATITUDE),parseFloat(LONGITUDE));
+                                ID_ST_1 = this.id;
+                              }
+                           });
                            },
                            dataType: "json"//set to JSON
                          })
                }, 10 * 1000);
              }
 
-              function addMarker(latLng, map) {
+              function addMarker(latLng, map, icon_type) {
                   var marker = new google.maps.Marker({
                       position: latLng,
                       map: map,
                       icon: {
-                        url: 'img/Trailer_Icon.png',
+                        url: icon_type,
                         scaledSize: new google.maps.Size(40, 40) // scaled size
                         // origin: new google.maps.Point(0,0), // origin
                         // anchor: new google.maps.Point(0, 0) // anchor
