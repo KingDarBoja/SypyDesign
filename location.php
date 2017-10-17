@@ -4,12 +4,9 @@ $host= 'sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com';
 $user = 'sypy_design';
 $pass = 'sypy_1234';
 $db = 'sypydb';
+// Add both tables
 $tname = 'localiz';
-<<<<<<< HEAD
 $tname2 = 'localiz2';
-=======
-$tnam2 = 'localiz2';
->>>>>>> f8958eaab3675ba69cef1558f19b158e7d9416e8
 $port = 10250;
 $con = new mysqli($host, $user, $pass, $db, $port) or die("Unable to connect");
 $strSQL = "SELECT  * FROM $tname ORDER BY id DESC LIMIT 1 ";
