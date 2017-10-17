@@ -5,6 +5,7 @@ $user = 'sypy_design';
 $pass = 'sypy_1234';
 $db = 'sypydb';
 $tname = 'localiz';
+$tname2 = 'localiz2';
 $port = 10250;
 $con = new mysqli($host, $user, $pass, $db, $port) or die("Unable to connect");
 $strSQL = "SELECT  * FROM $tname ORDER BY id DESC LIMIT 1 ";
