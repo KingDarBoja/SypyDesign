@@ -21,13 +21,31 @@ if (isset($_POST['endd'])) {
 $secondsi = strtotime($initial_d);
 $secondse = strtotime($ending_d);
 
-while ($row = mysqli_fetch_assoc($rs)) {
+for ($i=0; $i < intval($spr); $i++) {
+  while ($row = mysqli_fetch_assoc($rs[$i])) {
     $tiempo_db = strtotime($row['tiempo']);
     if ($tiempo_db >= $secondsi && $tiempo_db < $secondse) {
-        $hs_data[] = $row;
+        $hs_data['vehicle_'.($i+1)][] = $row;
     }
-    // echo '<script>console.log('.$tiempo_db.')</script>';
+    // echo '<script>console.log('.$row['tiempo'].')</script>';
+  }
 }
+
+// while ($row = mysqli_fetch_assoc($rs)) {
+//     $tiempo_db = strtotime($row['tiempo']);
+//     if ($tiempo_db >= $secondsi && $tiempo_db < $secondse) {
+//         $hs_data['vehicle_1'][] = $row;
+//     }
+//     // echo '<script>console.log('.$tiempo_db.')</script>';
+// }
+//
+// while ($row1 = mysqli_fetch_assoc($rs1)) {
+//     $tiempo_db1 = strtotime($row1['tiempo']);
+//     if ($tiempo_db1 >= $secondsi && $tiempo_db1 < $secondse) {
+//         $hs_data['vehicle_2'][] = $row1;
+//     }
+//     // echo '<script>console.log('.$tiempo_db.')</script>';
+// }
 
 // while ($row = mysqli_fetch_assoc($rs)) {
 //     $hs_data[] = $row;

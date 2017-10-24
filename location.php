@@ -4,8 +4,7 @@ $host= 'sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com';
 $user = 'sypy_design';
 $pass = 'sypy_1234';
 $db = 'sypydb';
-// Add both tables
-$tname = 'localiz';
+$tname = 'localiz1';
 $tname2 = 'localiz2';
 $port = 10250;
 $con = new mysqli($host, $user, $pass, $db, $port) or die("Unable to connect");
@@ -20,7 +19,6 @@ if ($rs) {
 if ($rs1) {
     $data['vehicle_2'] = mysqli_fetch_assoc($rs1);
 }
-
 echo json_encode($data);
 //echo("addMarker($lat, $lon, '<b>$name</b><br />$desc');\n");
 ?>

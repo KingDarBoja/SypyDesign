@@ -27,6 +27,7 @@
 <script type="text/javascript" src="../plugin/foundation_6.4.2/js/vendor/foundation.js"></script>
 <script type="text/javascript" src="../plugin/foundation_6.4.2/js/app.js"></script>
 <script type="text/javascript" src="../plugin/foundation_datepicker/js/foundation-datepicker.js"></script>
+<script type="text/javascript" src="../js/hs_option.js"></script>
 <script type="text/javascript" src="../js/hs_query.js"></script>
 </body>
 

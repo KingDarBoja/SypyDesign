@@ -39,8 +39,8 @@ DB_NAME = 'sypydb'
 # Tablas dento de la base de datos, hasta ahora solo requerimos una sola
 TABLES = {}
 
-TABLES['localiz'] = (
-    "CREATE TABLE IF NOT EXISTS `localiz` ("
+TABLES['localiz1'] = (
+    "CREATE TABLE IF NOT EXISTS `localiz1` ("
     "  `id` int(255) NOT NULL AUTO_INCREMENT,"
     "  `latitud` varchar(15) NOT NULL,"
     "  `longitud` varchar(15) NOT NULL,"
@@ -90,7 +90,7 @@ def main():
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     HOST = socket.gethostbyname(socket.gethostname())
-    PORT = 10258
+    PORT = 10257
     # Bind the socket to the port
     server_address = (HOST, PORT)
     print('Inicializando en Host IPV4 %s Puerto %s' % server_address)
@@ -115,7 +115,7 @@ def main():
                         cursor = cnx.cursor()
                         cursor.execute("USE {}".format(DB_NAME))
                         # Inserta los valores
-                        add_localiz = ("INSERT INTO localiz "
+                        add_localiz = ("INSERT INTO localiz1 "
                                         "(latitud, longitud, tiempo) "
                                         "VALUES (%s, %s, %s)")
                         data_localiz = (str(lat), str(lon), fecha)

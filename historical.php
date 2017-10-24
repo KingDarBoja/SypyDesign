@@ -13,6 +13,24 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="small-12 columns">
+      <ul class="tabs" data-tabs id="his_option_tabs">
+        <li class="tabs-title is-active"><a href="#" data-tabs-target="one-vehicle" aria-selected="true">Primer vehiculo</a></li>
+        <li class="tabs-title"><a data-tabs-target="two-vehicle" href="#">Segundo vehiculos</a></li>
+        <li class="tabs-title"><a data-tabs-target="both-vehicle" href="#">Ambos vehiculos</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="small-12 columns">
+      <!-- Testing div for multi vehicles options -->
+      <div id="opt_hs_rs">
+
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="small-6 columns">
       <table class="table">
