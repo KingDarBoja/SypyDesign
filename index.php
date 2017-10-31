@@ -30,51 +30,6 @@
       ajaxCall(); // To output when the page loads
       setInterval(ajaxCall, (10 * 1000)); // x * 1000 to get it in seconds
     </script>
-    <div class="row align-center">
-      <div class="small-12 columns text-center">
-        <div class="titulo">
-          <h2>Sy-Py Design</h2>
-        </div>
-      </div>
-    </div>
-    <div class="row align-center">
-      <div class="small-12 columns text-center">
-        <div class="header_db">
-          <h5><?php
-              if ($con) {
-                  echo "Conectado a la base de datos: ". $db;
-              } else {
-                  echo "Fallo al conectarse a la base de datos: ". $db;
-              }
-          ?>
-          </h5>
-          <h5>
-            <?php
-                if ($strSQL) {
-                    echo "Conectado a la tabla: ". $tname;
-                } else {
-                    echo "Fallo al conectarse a la base de datos";
-                }
-            ?>
-          </h5>
-        </div>
-			</div>
-		</div>
-    <div class="row align-center text-center">
-      <div class="small-8 columns">
-        <table class="table_db">
-          <thead>
-            <tr>
-              <th class="text-center" colspan="2"><h4>Localización</h4></th>
-            </tr>
-          </thead>
-          <tbody id="disp_data">
-          </tbody>
-        </table>
-        <!-- Test div for console.log or display in the HTML DOM -->
-        <!-- <div id="testa"></div> -->
-      </div>
-    </div>
     <div class="row small-collapse medium-collapse expanded">
       <div class="small-12 column">
         <div id="map"></div>
@@ -87,12 +42,15 @@
             },
             motorcycle: {
               icon: iconBase + 'Motorcycle_Icon.png'
+            },
+            taxi: {
+              icon: iconBase + 'Taxi_Icon.png'
             }
           };
           var strokes = {
             purple: '#551A8B',
             red: '#8B0000',
-            blue: '#'
+            blue: '#000080'
           };
           function moveToLocation(lat, lng){
               var center = new google.maps.LatLng(lat, lng);
@@ -164,7 +122,7 @@
                                     break;
                                   // Add the cases that you want or replace switch statment by if in order to use ranges.
                                   default:
-                                    addMarker(new google.maps.LatLng(LATITUDE, LONGITUDE), map, icons['truck'].icon);
+                                    addMarker(new google.maps.LatLng(LATITUDE, LONGITUDE), map, icons['taxi'].icon);
                                 }
                                 ID_ST[i] = this.id;
                               }
@@ -201,6 +159,44 @@
         }
         </script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDG9JVGZEHXp0TrrOMmb9OeTDIHkPq0yQk&callback=initMap"></script>
+      </div>
+    </div>
+    <div class="row align-center">
+      <div class="small-12 columns text-center">
+        <div class="header_db">
+          <h5><?php
+              if ($con) {
+                  echo "Conectado a la base de datos: ". $db;
+              } else {
+                  echo "Fallo al conectarse a la base de datos: ". $db;
+              }
+          ?>
+          </h5>
+          <h5>
+            <?php
+                if ($strSQL) {
+                    echo "Conectado a la tabla: ". $tname;
+                } else {
+                    echo "Fallo al conectarse a la base de datos";
+                }
+            ?>
+          </h5>
+        </div>
+			</div>
+		</div>
+    <div class="row align-center text-center">
+      <div class="small-8 columns">
+        <table class="table_db">
+          <thead>
+            <tr>
+              <th class="text-center" colspan="2"><h4>Localización</h4></th>
+            </tr>
+          </thead>
+          <tbody id="disp_data">
+          </tbody>
+        </table>
+        <!-- Test div for console.log or display in the HTML DOM -->
+        <!-- <div id="testa"></div> -->
       </div>
     </div>
   </section>

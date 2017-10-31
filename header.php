@@ -16,6 +16,7 @@
     <!-- Insert this within your head tag and after foundation.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/motion-ui/1.1.1/motion-ui.min.css" />
     <!-- CSS files -->
+    <link rel="stylesheet" href="..\css\font-awesome.css" type="text/css">
     <link rel="stylesheet" type="text/css" href="../plugin/foundation_6.4.2/css/foundation_flex.css">
     <link rel="stylesheet" type="text/css" href="../plugin/foundation_datepicker/css/foundation-datepicker.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="../css/estilos.css" media="screen" />
@@ -58,9 +59,10 @@
                 <div class="columns">
                   <div class="top-bar" id="main-menu">
                     <ul class="menu align-justify vertical large-horizontal">
-                      <li><a href="../index.php">Home</a></li>
-                      <li><a href="../historical.php">Historical</a></li>
-                      <li><a href="#">Contact us</a></li>
+                      <li><a href="../index.php"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp; Home</a></li>
+                      <li><a href="../historical.php"><i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp; Historical</a></li>
+                      <li><a href="#"><i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp; About us</a></li>
+                      <li><a href="../contact.php"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i>&nbsp;Contact us</a></li>
                     </ul>
                   </div>
                 </div>

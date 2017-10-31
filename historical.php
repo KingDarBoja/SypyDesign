@@ -16,11 +16,15 @@
 
   <div class="row">
     <div class="small-12 columns">
-      <ul class="tabs" data-tabs id="his_option_tabs">
-        <li class="tabs-title is-active"><a href="#" data-tabs-target="one-vehicle" aria-selected="true">Primer vehiculo</a></li>
-        <li class="tabs-title"><a data-tabs-target="two-vehicle" href="#">Segundo vehiculos</a></li>
-        <li class="tabs-title"><a data-tabs-target="both-vehicle" href="#">Ambos vehiculos</a></li>
-      </ul>
+      <label>Panel de selección de vehiculo
+        <select id="select_vehicle">
+          <option value="" selected disabled hidden>Seleccione vehiculo</option>
+          <option value="all_vehicle" >Todos los vehiculos</option>
+          <option value="first_vehicle">Primer Vehiculo (Syrus)</option>
+          <option value="second_vehicle">Segundo vehiculo (App)</option>
+          <option value="third_vehicle">Tercer vehiculo (App)</option>
+        </select>
+      </label>
     </div>
   </div>
   <div class="row">

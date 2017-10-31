@@ -19,8 +19,9 @@ $spr = implode(",",$howManyTables);
 for ($i=0; $i < intval($spr); $i++) {
   $strSQL[$i] = "SELECT * FROM localiz".($i+1);
   $rs[$i] = mysqli_query($con, $strSQL[$i]) or die("Unsuccessfull Query");
-  $rs_temp[$i] = implode(",",mysqli_fetch_assoc($rs[$i]));
+  // $rs_temp[$i] = implode(",",mysqli_fetch_assoc($rs[$i]));
 }
+
 // echo '<script>console.log('.$tableCount.')</script>';
 // $strSQL = "SELECT  * FROM $tname";
 // $strSQL1 = "SELECT  * FROM $tname2";
