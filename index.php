@@ -189,7 +189,7 @@
         <table class="table_db">
           <thead>
             <tr>
-              <th class="text-center" colspan="2"><h4>Localización</h4></th>
+              <th class="text-center" colspan="4"><h4>Localización</h4></th>
             </tr>
           </thead>
           <tbody id="disp_data">

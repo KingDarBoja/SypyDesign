@@ -1,4 +1,4 @@
-function addMarker2(latlng2, time2, id2, map2, iconObj, veh_obj) {
+function addMarker2(latlng2, time2, id2, map2, iconObj, veh_obj, rpm2) {
   var marker = new google.maps.Marker({
     position: latlng2,
     // map: map2,
@@ -12,12 +12,32 @@ function addMarker2(latlng2, time2, id2, map2, iconObj, veh_obj) {
     animation: google.maps.Animation.DROP,
     infoWindowIndex: id2
   });
-  var content = '<div id="Marker_Time">' +
-    '<h6>' + 'Title Place' + '</h6>' +
-    '<p>' + time2 + '</p>' + '</div>';
+  var content = '<div id="iw-container">' +
+    '<div class="iw-title">' + '<h6><b>' + veh_obj + '</b></h6>' + '</div>' +
+    '<div class="iw-content">' + '<p>' +
+    '<b>Latitud: </b>' + latlng2.lat() + '<br/>' +
+    '<b>Longitud: </b>' + latlng2.lng() + '<br/>' +
+    '<b>Tiempo: </b>' + time2 + '<br/>' +
+    '<b>RPM: </b>' + rpm2 + '<br/>' +
+    '</p>' + '</div></div>';
+
+  var content = '<div id="iw-container">' +
+    '<div class="iw-title">' + veh_obj + '</div>' +
+    '<div class="iw-content">' +
+    '<div class="iw-subTitle"></div>' +
+    '<p>' +
+    '<b>Latitud: </b>' + latlng2.lat() +
+    '<br> <b>Longitud: </b>' + latlng2.lng() +
+    '<br> <b>Tiempo: </b>' + time2 +
+    '<br> <b>RPM: </b>' + rpm2 +
+    '</p>' +
+    '</div>' +
+    '<div class="iw-bottom-gradient"></div>' +
+    '</div>';
 
   var infoWindow = new google.maps.InfoWindow({
-    content: content
+    content: content,
+    maxWidth: 350
   });
 
   google.maps.event.addListener(marker, 'click',
@@ -27,8 +47,64 @@ function addMarker2(latlng2, time2, id2, map2, iconObj, veh_obj) {
     }
   );
 
+  google.maps.event.addListener(map2, 'click', function() {
+    infoWindow.close();
+  });
+
   infoWindows.push(infoWindow);
   markers[veh_obj].push(marker);
+
+  google.maps.event.addListener(infoWindow, 'domready', function() {
+
+    // Reference to the DIV that wraps the bottom of infowindow
+    var iwOuter = $('.gm-style-iw');
+
+    /* Since this div is in a position prior to .gm-div style-iw.
+     * We use jQuery and create a iwBackground variable,
+     * and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
+     */
+    var iwBackground = iwOuter.prev();
+
+    // Removes background shadow DIV
+    iwBackground.children(':nth-child(2)').css({
+      'display': 'none'
+    });
+
+    // Removes white background DIV
+    iwBackground.children(':nth-child(4)').css({
+      'display': 'none'
+    });
+
+    // Reference to the div that groups the close button elements.
+    var iwCloseBtn = iwOuter.next();
+
+    // Apply the desired effect to the close button
+    iwCloseBtn.css({
+      width: '25px',
+      height: '25px',
+      opacity: '1',
+      right: '52px',
+      top: '15px',
+      border: '6px solid #48b5e9',
+      'border-radius': '15px',
+      'box-shadow': '0 0 5px #3990B9'
+    });
+
+    // If the content of infowindow not exceed the set maximum height, then the gradient is removed.
+    if ($('.iw-content').height() < 140) {
+      $('.iw-bottom-gradient').css({
+        display: 'none'
+      });
+    }
+
+    // The API automatically applies 0.7 opacity to the button after the mouseout event. This function reverses this event to the desired value.
+    iwCloseBtn.mouseout(function() {
+      $(this).css({
+        opacity: '1'
+      });
+    });
+
+  });
 
   return markers[veh_obj];
 }
@@ -148,8 +224,12 @@ $("#btn-historical").click(function() {
             var LATITUDE = this.latitud;
             var LONGITUDE = this.longitud;
             var TIME = this.tiempo;
+            var RPM = this.rpm;
+            if (RPM == null) {
+              RPM = 0;
+            }
             if (ID_HS[i] != this.id) {
-              obj_marcador['vehicle_' + (i + 1)] = addMarker2(new google.maps.LatLng(LATITUDE, LONGITUDE), TIME, ID, map2, icons['truck'].icon, 'vehicle_' + (i + 1));
+              obj_marcador['vehicle_' + (i + 1)] = addMarker2(new google.maps.LatLng(LATITUDE, LONGITUDE), TIME, ID, map2, icons['truck'].icon, 'vehicle_' + (i + 1), RPM);
               myCoord = new google.maps.LatLng(parseFloat(LATITUDE), parseFloat(LONGITUDE));
               myPath2['vehicle_' + (i + 1)].push(myCoord);
               switch (i) {
