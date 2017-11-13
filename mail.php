@@ -1,4 +1,4 @@
-// Testing contact form
+// Testing contact form, you can change the email_to in order to receive the message.
 <?php
 
 if(isset($_POST['email'])) {
