@@ -1,3 +1,4 @@
+// Testing contact form
 <?php
 
 if(isset($_POST['email'])) {
