@@ -1,11 +1,11 @@
 <?php
-$host= 'sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com';
-$user = 'sypy_design';
-$pass = 'sypy_1234';
+$host= 'localhost';
+$user = 'root';
+$pass = '';
 $db = 'sypydb';
 $tname1 = 'localiz1';
 $tname2 = 'localiz2';
-$port = 10250;
+$port = 3306;
 $con = new mysqli($host, $user, $pass, $db, $port) or die("Unable to connect");
 $strSQL1 = "SELECT  * FROM $tname1 ORDER BY id DESC LIMIT 1 ";
 $strSQL2 = "SELECT  * FROM $tname2 ORDER BY id DESC LIMIT 1 ";

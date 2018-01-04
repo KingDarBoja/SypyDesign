@@ -1,12 +1,12 @@
 <?php
 
-$host= 'sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com';
-$user = 'sypy_design';
-$pass = 'sypy_1234';
+$host= 'localhost';
+$user = 'root';
+$pass = '';
 $db = 'sypydb';
-$tname = 'localiz1';
+$tname1 = 'localiz1';
 $tname2 = 'localiz2';
-$port = 10250;
+$port = 3306;
 
 $con = new mysqli($host, $user, $pass, $db, $port) or die("Unable to connect");
 $strCount = "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='".$db."'";

@@ -4,14 +4,15 @@
 <?php require_once('header.php'); ?>
   <section>
     <?php
-        $host= 'sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com';
-        $user = 'sypy_design';
-        $pass = 'sypy_1234';
+        $host= 'localhost';
+        $user = 'root';
+        $pass = '';
         $db = 'sypydb';
-        $tname = 'localiz1';
-        $port = 10250;
+        $tname1 = 'localiz1';
+        $tname2 = 'localiz2';
+        $port = 3306;
         $con = new mysqli($host, $user, $pass, $db, $port) or die("Unable to connect");
-        $strSQL = "SELECT  * FROM $tname ORDER BY id DESC LIMIT 1 ";
+        $strSQL = "SELECT  * FROM $tname1 ORDER BY id DESC LIMIT 1 ";
         $rs = mysqli_query($con, $strSQL) or die("Unsuccessfull Query");
         if ($rs) {
             $row = mysqli_fetch_array($rs);
@@ -58,7 +59,16 @@
               map.panTo(center);
           }
           function initMap() {
-            var latlng = {lat: <?php echo $row['latitud'] ?> , lng: <?php echo $row['longitud'] ?>};
+            var latlng = {lat: <?php
+                if($row['latitud'] == null) {
+                  echo 0.0;
+                }
+              ?> ,
+              lng: <?php
+                if($row['longitud'] == null) {
+                  echo 0.0;
+                }
+              ?>};
             var myOptions = {
                 zoom: 16,
                 center: latlng,
@@ -175,7 +185,7 @@
           <h5>
             <?php
                 if ($strSQL) {
-                    echo "Conectado a la tabla: ". $tname;
+                    echo "Conectado a la tabla: ". $tname1;
                 } else {
                     echo "Fallo al conectarse a la base de datos";
                 }
