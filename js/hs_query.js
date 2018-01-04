@@ -190,6 +190,7 @@ $("#btn-historical").click(function() {
       // Uncomment if you want to enable table animations (historical query)
       // $('#table_hist').fadeIn(200);
       var hsdata_size = Object.keys(hs_data).length;
+      console.log(hsdata_size);
       while (cc == 0) {
         for (i = 0; i < hsdata_size; i++) {
           myPath2['vehicle_' + (i + 1)] = [];
@@ -202,7 +203,7 @@ $("#btn-historical").click(function() {
       //   myPath2 = {};
       // }
       var json_hist = jQuery.parseJSON(JSON.stringify(hs_data));
-      if (hsdata_size == undefined) {
+      if (hsdata_size == undefined || hsdata_size == null || hsdata_size == 0) {
         INIT_LAT = 0;
         INIT_LON = 0;
         initMap2();
