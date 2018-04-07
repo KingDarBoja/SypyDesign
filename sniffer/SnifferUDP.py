@@ -1,16 +1,19 @@
 import socket
-import time
-import pymysql as mariadb
+import pendulum
+from sqlalchemy import (MetaData, create_engine, Table,
+                        Column, String, Integer, insert)
 
-# Syrus Information / raw_data: >XXXAABBBBCDDDDDEEEFFFFFGGGGHHHHHIIIJJJKL;ID=357330051004711<
-# Syrus Information / raw data: 01234567890123456789012345678901234567890;ID=357330051004711<
-# El mensaje que se recibe debe filtrarse (Eliminar "Qualifier, Event Command, and ID information")
+# ******* Message data from Syrus explained. *******
+# Syrus raw data: >XXXAABBBBCDDDDDEEEFFFFFGGGGHHHHHIIIJJJKL;ID=357330051004711<
+# Received message must be filtered (Remove "Qualifier, Event Command, ID")
 # AA: Event index. Range 0-99.
 # BBBB: Number of weeks since 00:00 AM January 6, 1980.
 # C: Day of week. From 0 to 6 where 0 is Sunday.
 # DDDDD: Time of the generated report. Seconds since 00:00 of the current date.
-# EEEFFFFF: WGS-84 Latitude. It does include the sign: Positive for north. EEE represents a value in degrees and FFFFF parts of a degree in decimals.
-# GGGGHHHHH: WGS-84 Longitude. It does include the sign: Positive for east. GGGG represents a value in degrees and HHHHH parts of a degree in decimals.
+# EEEFFFFF: WGS-84 Latitude. It does include the sign: Positive for north.
+# EEE represents a value in degrees and FFFFF parts of a degree in decimals.
+# GGGGHHHHH: WGS-84 Longitude. It does include the sign: Positive for east.
+# GGGG represents a value in degrees and HHHHH parts of a degree in decimals.
 # III: Vehicle velocity in mph.
 # JJJ: Vehicle heading, in degrees from North increasing eastwardly.
 # K: Position fix mode:
@@ -25,116 +28,57 @@ import pymysql as mariadb
 # 2: Fresh, less than 10 seconds
 # 9: GPS Failure
 
-# Formato de los datos para visualización
-# Formato de encabezados para tener seguimiento de los datos (Reportes)
-
-
-# Para filtrar las alertas de eventos (que ya se saben), descomentar las dos lineas siguientes
-from warnings import filterwarnings
-filterwarnings('ignore', category = mariadb.Warning)
-
-# Nombre de la base de datos
+# Database name
 DB_NAME = 'sypydb'
 
-# Tablas dento de la base de datos, hasta ahora solo requerimos una sola
+# Definition of table names inside database DB_NAME
 TABLES = {}
 
-TABLES['localiz1'] = (
-    "CREATE TABLE IF NOT EXISTS `localiz1` ("
-    "  `id` int(255) NOT NULL AUTO_INCREMENT,"
-    "  `latitud` varchar(15) NOT NULL,"
-    "  `longitud` varchar(15) NOT NULL,"
-    "  `tiempo` varchar(22) NOT NULL,"
-    "  PRIMARY KEY (`id`), UNIQUE KEY `tiempo` (`tiempo`)"
-    ") ENGINE=InnoDB")
+# Connect variables.
+TABLE_NAME = 'localiz_1'
+HOST_NAME = 'localhost'
+PORT = 10250
+USER_NAME = 'sypy_design'
+PASSWORD = 'sypy_1234'
 
-# Conexión con el servidor utilizando XAMPP
-cnx = mariadb.connect(host='sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com', port=10250, user='sypy_design', password='sypy_1234')
-cursor = cnx.cursor()
+# Create database using pymysql dialect (MySQL)
+engine = create_engine('mysql+pymysql://{}:{}}>@{}:{}/{}'
+                       .format(USER_NAME, PASSWORD, HOST_NAME, PORT, DB_NAME))
+connection = engine.connect()
+metadata = MetaData()
 
-# Creación base de datos
-def create_database(curs):
-    try:
-        # Elimina la base de datos si ya existe
-        # curs.execute("DROP DATABASE IF EXISTS {}".format(DB_NAME))
-        # Crea la base de datos si no existe
-        curs.execute(
-            "CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
-    except mariadb.Error as err:
-        print("Failed creating database: {}".format(err))
-        exit(1)
+vehicle_table = Table(TABLE_NAME, metadata,
+                      Column('id', Integer(), unique=True),
+                      Column('latitud', String(15), nullable=False),
+                      Column('longitud', String(15), nullable=False),
+                      Column('tiempo', String(22), unique=True)
+                      )
+
+metadata.create_all(engine)
+
+
+def update_table(sock):
+    '''Connect and update values in database using sock argument.'''
+    # Get the raw_data plus address (tuple).
+    raw_data, addr = sock.recvfrom(65535)
+    # Split latitude and longitude from save_data
+    if raw_data:
+        op, evento, fecha, lat, lon = obtMsg(str(raw_data)[2:])
+        # Check state of op
+        if op:
+            print('Evento: {}, la latitud es: {} y la longitud es: {}'.
+                  format(evento, lat, lon))
+            print('Fecha del dato: ' + fecha)
+            # Insert statement to insert a record into vehicle_table
+            stmt = insert(vehicle_table).values(latitud=lat, longitud=lon,
+                                                tiempo=fecha)
+            # Execute the statement via the connection
+            connection.execute(stmt)
+
+        else:
+            print("\n{} \nMensaje Ignorado\n{}".format('*'*20, '*'*20))
     else:
-        print("Database OK")
-
-# try:
-#     create_database(cursor)
-# except mariadb.Error as err:
-#     print("Error: {}".format(err))
-
-cursor.execute("USE {}".format(DB_NAME))
-for name, ddl in TABLES.items():
-    try:
-        print("Creating table {}: ".format(name), end='')
-        cursor.execute(ddl)
-    except mariadb.Error as err:
-        print("Failed creating table: {}".format(err))
-        exit(1)
-    else:
-        print("Table OK")
-
-cnx.commit()
-cnx.close()
-
-
-def main():
-    # Create a TCP/IP socket
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    HOST = socket.gethostbyname(socket.gethostname())
-    PORT = 10257
-    # Bind the socket to the port
-    server_address = (HOST, PORT)
-    print('Inicializando en Host IPV4 %s Puerto %s' % server_address)
-    sock.bind(server_address)
-
-    while True:
-        try:
-            while True:
-                print("Connected")
-                raw_data, addr = sock.recvfrom(65535)
-                save_data = str(raw_data)[2:]
-                # Formato para discriminar Latitud y Longitud
-                if raw_data:
-                    # print('recibido ' + save_data)
-                    op, evento, fecha, lat, lon = obtMsg(save_data);
-                    # print(op, evento)
-                    if op:
-                        print('Evento: ' + str(evento) + ', ' + 'la latitud es: ' + str(lat) + ' y la longitud es: ' + str(lon))
-                        print('Fecha del dato: ' + fecha)
-                        # Se invoca la base de datos
-                        cnx = mariadb.connect(host='sypy-db-instance.cjztblqral8m.us-east-2.rds.amazonaws.com', port=10250, user='sypy_design', password='sypy_1234')
-                        cursor = cnx.cursor()
-                        cursor.execute("USE {}".format(DB_NAME))
-                        # Inserta los valores
-                        add_localiz = ("INSERT INTO localiz1 "
-                                        "(latitud, longitud, tiempo) "
-                                        "VALUES (%s, %s, %s)")
-                        data_localiz = (str(lat), str(lon), fecha)
-
-                        # Insert new localization
-                        cursor.execute(add_localiz, data_localiz)
-
-                        cnx.commit()
-
-                        cursor.close()
-                        cnx.close()
-                    else:
-                        print("***********************************************")
-                        print(" Mensaje Ignorado ")
-                        print("***********************************************")
-                else:
-                    break
-        finally:
-            print("No se estan recibiendo más datos")
+        return False
 
 
 def obtMsg(d):
@@ -161,13 +105,35 @@ def obtMsg(d):
         lon = 0
     return op, evento, fecha, lat, lon
 
-def obtFecha(sem,dia,hora):
+
+def obtFecha(sem, dia, hora):
     seg = int(sem) * 7 * 24 * 60 * 60 + (int(dia) + 3657) * 24 * 60 * 60 + int(hora) - 5 * 60 * 60
     # Transforma el numero (en segundos) a un formato de fecha especificado por los %b %d %Y %M %S
     # (Vease https://docs.python.org/2/library/time.html)
     # t = time.mktime(seg)
     fecha = time.strftime("%b %d %Y %H:%M:%S", time.localtime(seg))
     return fecha
+
+
+def main():
+    # Create a TCP/IP socket to scan
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock_host = socket.gethostbyname(socket.gethostname())
+    sock_port = 10257
+    # Bind the socket to the port
+    server_address = (sock_host, sock_port)
+    print('Inicializando en Host IPV4 {} Puerto {}'.format(server_address))
+    sock.bind(server_address)
+    if sock.bind(server_address):
+        print('Socket binding successful.')
+    data_received = True
+
+    while data_received:
+        try:
+            data_received = update_table(sock)
+        finally:
+            connection.close()
+            print("No more data being received. \nConnection Closed")
 
 
 main()
