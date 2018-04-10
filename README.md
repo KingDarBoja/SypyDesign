@@ -1,6 +1,10 @@
-# sypy_design
-Codes for making a dynamic webpage with PHP + MariaDB + Python for vehicle tracking using Syrus 3G device and Amazon Web services.
+# SyPy Design
+Dynamic webpage with PHP + SQL + Python for vehicle tracking using Syrus 3G device.
 
-The main php file is called index.php which connect to the MariaDB database (Amazon Web Services - RDS) located at the cloud. It refresh the table content after a time interval in order to update the longitude, latitude and time stamp of tracked object (in this case, the Syrus 3G inside a vehicle).
+The main php file is called index.php which connect to the provided database (can be remote or local). It refresh the table content after a time interval in order to update the longitude, latitude and time stamp of tracked object (in this case, the Syrus 3G inside a vehicle).
 
-The Sniffer code (.py extension) will registers a specific port (UDP Port) and performs processing of the information received in order to send such information (latitude, longitude and time stamp) to the database.
+The "sniffer" script (.py extension) will check specified UDP port and perform processing at received data in order to send information as latitude, longitude and timestamp to the database.
+
+The libraries used at the python script (generated using [pipreqs](https://github.com/bndr/pipreqs):
+pendulum==1.4.4
+SQLAlchemy==1.2.6
