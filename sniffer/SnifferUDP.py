@@ -66,9 +66,9 @@ def update_table(sock):
         op, evento, fecha, lat, lon = obtMsg(str(raw_data)[2:])
         # Check state of op
         if op:
-            print('Evento: {}, la latitud es: {} y la longitud es: {}'.
+            print('Event: {}, Latitude: {} - Longitude: {}'.
                   format(evento, lat, lon))
-            print('Fecha del dato: ' + fecha)
+            print('Datetime: ' + fecha)
             # Insert statement to insert a record into vehicle_table
             stmt = insert(vehicle_table).values(latitud=lat, longitud=lon,
                                                 tiempo=fecha)
@@ -128,7 +128,10 @@ def main():
     sock.bind(server_address)
     if sock.bind(server_address):
         print('Socket binding successful.')
-    data_received = True
+        data_received = True
+    else:
+        print('socket binding failed.')
+        data_received = False
 
     while data_received:
         try:
