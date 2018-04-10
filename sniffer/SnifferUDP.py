@@ -82,15 +82,14 @@ def update_table(sock):
 
 
 def obtMsg(d):
-    # Discrimina entre el REV y RPV
+    # Differentiate between REV and RPV
     if d[0:4] == ">REV":
         op = True
-        # Se utilizara para imprimir datos (como confirmación)
+        # This variable is gonna be used as confirmation message.
         evento = int(d[4:6])
-        # Se almacenan los index de eventos
+        # Store event history index as timestamp
         fecha = obtFecha(d[6:10], d[10], d[11:16])
-        # Se almacenan las fechas como un string (de una función que le hace tratamiento)
-        # Coordenadas
+        # Store coordinates (lat, lon) as string and check sign.
         lat = float(d[17:19]) + (float(d[19:24]) / 100000)
         if d[16] == "-":
             lat = -lat
@@ -107,11 +106,14 @@ def obtMsg(d):
 
 
 def obtFecha(sem, dia, hora):
-    seg = int(sem) * 7 * 24 * 60 * 60 + (int(dia) + 3657) * 24 * 60 * 60 + int(hora) - 5 * 60 * 60
-    # Transforma el numero (en segundos) a un formato de fecha especificado por los %b %d %Y %M %S
-    # (Vease https://docs.python.org/2/library/time.html)
-    # t = time.mktime(seg)
-    fecha = time.strftime("%b %d %Y %H:%M:%S", time.localtime(seg))
+    # Transform all dates into seconds: timestamp_val
+    timestamp_val = int(sem)*604800 + int(dia)*86400 + int(hora)*3600
+    # Transform timestamp (timestamp_val) into Pendulum instance
+    # at defined timezone (timezone_val) and applies datetime method
+    # to get output like '1969-12-31 23:59:59'
+    timezone_val = 'America/Bogota'
+    fecha = pendulum.from_timestamp(timestamp_val,
+                                    timezone_val).to_datetime_string()
     return fecha
 
 
