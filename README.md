@@ -5,6 +5,7 @@ The main php file is called index.php which connect to the provided database (ca
 
 The "sniffer" script (.py extension) will check specified UDP port and perform processing at received data in order to send information as latitude, longitude and timestamp to the database.
 
-The libraries used at the python script (generated using [pipreqs](https://github.com/bndr/pipreqs):
-pendulum==1.4.4
-SQLAlchemy==1.2.6
+The libraries used at the python script, generated using [pipreqs](https://github.com/bndr/pipreqs):
+
+- pendulum==1.4.4
+- SQLAlchemy==1.2.6
